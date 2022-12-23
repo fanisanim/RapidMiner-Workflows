@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="7.5.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="7.5.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="Set Macro" width="90" x="112" y="340">
+        <parameter key="macro" value="BASEDIR"/>
+        <parameter key="value" value="D:\PHD\Resources\BPI\2017\Rapid\REpair"/>
+      </operator>
+      <operator activated="true" class="loop_files" compatibility="6.4.000" expanded="true" height="82" name="Create PetriNet" width="90" x="313" y="340">
+        <parameter key="directory" value="G:\PHD\Experiments\Sampling\Temp"/>
+        <parameter key="filter" value="BPIC-2018.*"/>
+        <parameter key="filtered_string" value="file name (last part of the path)"/>
+        <parameter key="file_name_macro" value="file_name"/>
+        <parameter key="file_path_macro" value="file_path"/>
+        <parameter key="parent_path_macro" value="parent_path"/>
+        <parameter key="recursive" value="false"/>
+        <parameter key="iterate_over_files" value="true"/>
+        <parameter key="iterate_over_subdirs" value="false"/>
+        <process expanded="true">
+          <operator activated="true" class="rapidprom:extract_log_from_file" compatibility="4.0.002" expanded="true" height="68" name="Extract Event Log" width="90" x="45" y="187">
+            <parameter key="importer" value="Naive"/>
+          </operator>
+          <operator activated="true" class="rapidprom:add_artificial_start_end_event_filter" compatibility="4.0.002" expanded="true" height="68" name="Add Artificial Start and End Event (2)" width="90" x="45" y="289">
+            <parameter key="Add Start Event" value="true"/>
+            <parameter key="Add End Event" value="true"/>
+          </operator>
+          <operator activated="true" class="rapidprom:add_classifier_log" compatibility="4.0.002" expanded="true" height="68" name="Add Classifier to Event Log" width="90" x="112" y="442">
+            <parameter key="Classifier" value="Event name"/>
+          </operator>
+          <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="145" name="Multiply (31)" width="90" x="179" y="544"/>
+          <operator activated="true" class="rapidprom:directly_follow_counter" compatibility="4.0.002" expanded="true" height="68" name="Directly_Follow_Counter" width="90" x="380" y="544"/>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Trace" width="90" x="514" y="544">
+            <parameter key="attribute_name" value="Number of Traces"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Variant" width="90" x="648" y="544">
+            <parameter key="attribute_name" value="Number of Variants"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Activitiy" width="90" x="782" y="544">
+            <parameter key="attribute_name" value="Number of Activities"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="FName" width="90" x="313" y="85">
+            <parameter key="macro" value="FName"/>
+            <parameter key="value" value="%{file_name}"/>
+          </operator>
+          <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="82" name="Log" width="90" x="380" y="289">
+            <list key="log">
+              <parameter key="Fname2" value="operator.FName.parameter.value"/>
+            </list>
+            <parameter key="sorting_type" value="none"/>
+            <parameter key="sorting_k" value="100"/>
+            <parameter key="persistent" value="false"/>
+          </operator>
+          <operator activated="false" class="subprocess" compatibility="7.5.001" expanded="true" height="103" name="Combine" width="90" x="581" y="901">
+            <process expanded="true">
+              <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="RL (2)" width="90" x="112" y="34">
+                <parameter key="macro" value="RL"/>
+                <parameter key="value" value="RL+NF"/>
+              </operator>
+              <operator activated="true" class="optimize_parameters_grid" compatibility="7.5.001" expanded="true" height="145" name="Optimize Parameters (4)" width="90" x="447" y="34">
+                <list key="parameters">
+                  <parameter key="Repair Log (2).Threshold" value="[0;0.5;25;linear]"/>
+                  <parameter key="Repair Log (2).Subsequent Length" value="[1;4;3;linear]"/>
+                  <parameter key="Repair Log (2).Threshold Adjustment" value="None,MaxVMean"/>
+                  <parameter key="Inductive Miner Matrix (4).Noise Threshold" value="[0;0.4;4;linear]"/>
+                  <parameter key="Inductive Miner Matrix (4).Variation" value="Inductive Miner - Infrequent"/>
+                </list>
+                <parameter key="error_handling" value="ignore error"/>
+                <process expanded="true">
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="82" name="Multiply (3)" width="90" x="45" y="34"/>
+                  <operator activated="true" class="rapidprom:repair_log" compatibility="4.0.002" expanded="true" height="68" name="Repair Log (2)" width="90" x="179" y="34">
+                    <parameter key="event_classifier" value="Activity classifier"/>
+                    <parameter key="Threshold" value="0.3"/>
+                    <parameter key="Subsequent Length" value="2"/>
+                    <parameter key="Threshold Adjustment" value="None"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:rprom_free_memory" compatibility="4.0.002" expanded="true" height="68" name="Free Memory (4)" width="90" x="45" y="493"/>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Multiply (5)" width="90" x="313" y="34"/>
+                  <operator activated="true" class="rapidprom:mine_petri_net_with_inductive_miner" compatibility="4.0.002" expanded="true" height="68" name="Inductive Miner Matrix (4)" width="90" x="447" y="34">
+                    <parameter key="event_classifier" value="(Event Name AND Lifecycle transition)"/>
+                    <parameter key="Variation" value="Inductive Miner - Infrequent"/>
+                    <parameter key="Noise Threshold" value="0.0"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="124" name="Multiply (7)" width="90" x="581" y="34"/>
+                  <operator activated="true" class="rapidprom:replay_a_log_on_petri_net_for_conformance_analysis" compatibility="4.0.002" expanded="true" height="124" name="Conformance Checking (4)" width="90" x="179" y="187">
+                    <parameter key="event_classifier" value="Activity classifier activityNameEN"/>
+                    <parameter key="Max Explored States (in Thousands)" value="2500"/>
+                    <parameter key="Timeout (sec)" value="60"/>
+                    <parameter key="Number of Threads" value="35"/>
+                    <parameter key="Use ILP for heuristic" value="false"/>
+                    <parameter key="Restrict to integers" value="true"/>
+                    <parameter key="Use result of previous ILP as an estimator for the heuristic" value="true"/>
+                    <parameter key="Heuristic Function" value="PLAIN"/>
+                    <parameter key="Epsilon" value="0.0"/>
+                    <parameter key="Queueing Model" value="DEPTHFIRST"/>
+                    <parameter key="Non-synchronous move sorting" value="NONE"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Inductive Fitness (3)" width="90" x="648" y="646">
+                    <parameter key="attribute_name" value="trace_fitness"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_macro" compatibility="7.5.001" expanded="true" height="68" name="Set Fitness (2)" width="90" x="782" y="646">
+                    <parameter key="macro" value="Fitness1"/>
+                    <parameter key="macro_type" value="data_value"/>
+                    <parameter key="statistics" value="average"/>
+                    <parameter key="attribute_name" value="trace_fitness"/>
+                    <parameter key="example_index" value="1"/>
+                    <list key="additional_macros"/>
+                  </operator>
+                  <operator activated="true" class="aggregate" compatibility="7.5.001" expanded="true" height="82" name="Aggregate (2)" width="90" x="447" y="748">
+                    <parameter key="use_default_aggregation" value="false"/>
+                    <parameter key="attribute_filter_type" value="all"/>
+                    <parameter key="attribute" value=""/>
+                    <parameter key="attributes" value=""/>
+                    <parameter key="use_except_expression" value="false"/>
+                    <parameter key="value_type" value="attribute_value"/>
+                    <parameter key="use_value_type_exception" value="false"/>
+                    <parameter key="except_value_type" value="time"/>
+                    <parameter key="block_type" value="attribute_block"/>
+                    <parameter key="use_block_type_exception" value="false"/>
+                    <parameter key="except_block_type" value="value_matrix_row_start"/>
+                    <parameter key="invert_selection" value="false"/>
+                    <parameter key="include_special_attributes" value="false"/>
+                    <parameter key="default_aggregation_function" value="average"/>
+                    <list key="aggregation_attributes">
+                      <parameter key="trace_index" value="count"/>
+                    </list>
+                    <parameter key="group_by_attributes" value="alignment_cost"/>
+                    <parameter key="count_all_combinations" value="false"/>
+                    <parameter key="only_distinct" value="false"/>
+                    <parameter key="ignore_missings" value="true"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="82" name="Multiply (12)" width="90" x="514" y="493"/>
+                  <operator activated="true" class="rapidprom:etc_1_align_precision" compatibility="4.0.002" expanded="true" height="82" name="Calculate ETC 1-align precision (5)" width="90" x="648" y="442">
+                    <parameter key="Pruning (cut) threshold for the Automaton" value="0.0"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Inductive Precision (3)" width="90" x="782" y="442">
+                    <parameter key="attribute_name" value="Value"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_macro" compatibility="7.5.001" expanded="true" height="68" name="Set Precision (2)" width="90" x="916" y="442">
+                    <parameter key="macro" value="Precision1"/>
+                    <parameter key="macro_type" value="data_value"/>
+                    <parameter key="statistics" value="average"/>
+                    <parameter key="attribute_name" value="Value"/>
+                    <parameter key="example_index" value="1"/>
+                    <list key="additional_macros"/>
+                  </operator>
+                  <operator activated="true" class="generate_attributes" compatibility="7.5.001" expanded="true" height="82" name="Generate FM1 (2)" width="90" x="1050" y="442">
+                    <list key="function_descriptions">
+                      <parameter key="FMeasure1" value="2* parse(%{Precision1})* parse(%{Fitness1}) / (parse(%{Precision1})+ parse(%{Fitness1}))"/>
+                    </list>
+                    <parameter key="keep_all" value="true"/>
+                  </operator>
+                  <operator activated="true" class="extract_performance" compatibility="7.5.001" expanded="true" height="82" name="Performance (2)" width="90" x="1184" y="136">
+                    <parameter key="performance_type" value="data_value"/>
+                    <parameter key="statistics" value="average"/>
+                    <parameter key="attribute_name" value="FMeasure1"/>
+                    <parameter key="example_index" value="1"/>
+                    <parameter key="optimization_direction" value="maximize"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Multiply (13)" width="90" x="581" y="748"/>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Fitted Count (4)" width="90" x="715" y="748">
+                    <parameter key="attribute_name" value="count(trace_index)"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="cost (4)" width="90" x="715" y="901">
+                    <parameter key="attribute_name" value="alignment_cost"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="124" name="Combine Log" width="90" x="1117" y="646">
+                    <list key="log">
+                      <parameter key="RepairThreshold" value="operator.Repair Log (2).parameter.Threshold"/>
+                      <parameter key="Repair Length" value="operator.Repair Log (2).parameter.Subsequent Length"/>
+                      <parameter key="Fitness" value="operator.Inductive Fitness (3).value.data_value"/>
+                      <parameter key="Precision" value="operator.Inductive Precision (3).value.data_value"/>
+                      <parameter key="Discovery ExeTime" value="operator.Inductive Miner Matrix (4).value.cpu-time"/>
+                      <parameter key="Discovery Cpu Exe Time" value="operator.Inductive Miner Matrix (4).value.cpu-execution-time"/>
+                      <parameter key="RePair ExeTime" value="operator.Repair Log (2).value.cpu-execution-time"/>
+                      <parameter key="Repair  CPUExeTime" value="operator.Repair Log (2).value.cpu-time"/>
+                      <parameter key="Whole Traces" value="operator.Whole Traces.value.data_value"/>
+                      <parameter key="Filtered Traces" value="operator.cost (4).value.data_value"/>
+                      <parameter key="Fitted Traces" value="operator.Fitted Count (4).value.data_value"/>
+                      <parameter key="Alignment Cost" value="operator.cost (4).value.data_value"/>
+                      <parameter key="FileName" value="operator.FName.parameter.value"/>
+                      <parameter key="Method" value="operator.RL (2).parameter.value"/>
+                      <parameter key="FMeasure" value="operator.Performance (2).value.performance"/>
+                      <parameter key="RepMethod" value="operator.Repair Log (2).parameter.Threshold Adjustment"/>
+                      <parameter key="InductiveMiner" value="operator.Inductive Miner Matrix (4).parameter.Noise Threshold"/>
+                    </list>
+                    <parameter key="sorting_type" value="none"/>
+                    <parameter key="sorting_k" value="100"/>
+                    <parameter key="persistent" value="false"/>
+                  </operator>
+                  <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="124" name="Combine Log 2" width="90" x="1251" y="646">
+                    <list key="log">
+                      <parameter key="RepairThreshold" value="operator.Repair Log (2).parameter.Threshold"/>
+                      <parameter key="Repair Length" value="operator.Repair Log (2).parameter.Subsequent Length"/>
+                      <parameter key="Fitness" value="operator.Inductive Fitness (3).value.data_value"/>
+                      <parameter key="Precision" value="operator.Inductive Precision (3).value.data_value"/>
+                      <parameter key="Discovery ExeTime" value="operator.Inductive Miner Matrix (4).value.cpu-time"/>
+                      <parameter key="Discovery Cpu Exe Time" value="operator.Inductive Miner Matrix (4).value.cpu-execution-time"/>
+                      <parameter key="RePair ExeTime" value="operator.Repair Log (2).value.cpu-execution-time"/>
+                      <parameter key="Repair  CPUExeTime" value="operator.Repair Log (2).value.cpu-time"/>
+                      <parameter key="Whole Traces" value="operator.Whole Traces.value.data_value"/>
+                      <parameter key="Filtered Traces" value="operator.cost (4).value.data_value"/>
+                      <parameter key="Fitted Traces" value="operator.Fitted Count (4).value.data_value"/>
+                      <parameter key="Alignment Cost" value="operator.cost (4).value.data_value"/>
+                      <parameter key="FileName" value="operator.FName.parameter.value"/>
+                      <parameter key="Method" value="operator.RL (2).parameter.value"/>
+                      <parameter key="FMeasure" value="operator.Performance (2).value.performance"/>
+                      <parameter key="RepMethod" value="operator.Repair Log (2).parameter.Threshold Adjustment"/>
+                      <parameter key="InductiveMiner" value="operator.Inductive Miner Matrix (4).parameter.Noise Threshold"/>
+                    </list>
+                    <parameter key="sorting_type" value="none"/>
+                    <parameter key="sorting_k" value="100"/>
+                    <parameter key="persistent" value="false"/>
+                  </operator>
+                  <connect from_port="input 1" to_op="Multiply (3)" to_port="input"/>
+                  <connect from_port="input 2" to_op="Conformance Checking (4)" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Multiply (3)" from_port="output 1" to_op="Repair Log (2)" to_port="event log "/>
+                  <connect from_op="Repair Log (2)" from_port="log (Filtered Log)" to_op="Multiply (5)" to_port="input"/>
+                  <connect from_op="Multiply (5)" from_port="output 1" to_op="Inductive Miner Matrix (4)" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Multiply (5)" from_port="output 2" to_port="result 2"/>
+                  <connect from_op="Inductive Miner Matrix (4)" from_port="model (ProM Petri Net)" to_op="Multiply (7)" to_port="input"/>
+                  <connect from_op="Multiply (7)" from_port="output 1" to_op="Calculate ETC 1-align precision (5)" to_port="model (PetriNet)"/>
+                  <connect from_op="Multiply (7)" from_port="output 2" to_op="Conformance Checking (4)" to_port="model (ProM Petri Net)"/>
+                  <connect from_op="Multiply (7)" from_port="output 3" to_port="result 1"/>
+                  <connect from_op="Conformance Checking (4)" from_port="example set with metrics, log level (Data Table)" to_op="Inductive Fitness (3)" to_port="example set"/>
+                  <connect from_op="Conformance Checking (4)" from_port="alignments (ProM PNRepResult)" to_op="Multiply (12)" to_port="input"/>
+                  <connect from_op="Conformance Checking (4)" from_port="example set with alignment values, trace level (Data Table)" to_op="Aggregate (2)" to_port="example set input"/>
+                  <connect from_op="Inductive Fitness (3)" from_port="example set" to_op="Set Fitness (2)" to_port="example set"/>
+                  <connect from_op="Set Fitness (2)" from_port="example set" to_op="Combine Log" to_port="through 2"/>
+                  <connect from_op="Aggregate (2)" from_port="example set output" to_op="Multiply (13)" to_port="input"/>
+                  <connect from_op="Multiply (12)" from_port="output 1" to_op="Calculate ETC 1-align precision (5)" to_port="alignments (ProM PNRepResult)"/>
+                  <connect from_op="Calculate ETC 1-align precision (5)" from_port="example set (Data Table)" to_op="Inductive Precision (3)" to_port="example set"/>
+                  <connect from_op="Inductive Precision (3)" from_port="example set" to_op="Set Precision (2)" to_port="example set"/>
+                  <connect from_op="Set Precision (2)" from_port="example set" to_op="Generate FM1 (2)" to_port="example set input"/>
+                  <connect from_op="Generate FM1 (2)" from_port="example set output" to_op="Performance (2)" to_port="example set"/>
+                  <connect from_op="Performance (2)" from_port="performance" to_port="performance"/>
+                  <connect from_op="Multiply (13)" from_port="output 1" to_op="Fitted Count (4)" to_port="example set"/>
+                  <connect from_op="Multiply (13)" from_port="output 2" to_op="cost (4)" to_port="example set"/>
+                  <connect from_op="Fitted Count (4)" from_port="example set" to_op="Combine Log" to_port="through 1"/>
+                  <connect from_op="cost (4)" from_port="example set" to_op="Combine Log" to_port="through 3"/>
+                  <connect from_op="Combine Log" from_port="through 1" to_op="Combine Log 2" to_port="through 1"/>
+                  <connect from_op="Combine Log" from_port="through 2" to_op="Combine Log 2" to_port="through 2"/>
+                  <connect from_op="Combine Log" from_port="through 3" to_op="Combine Log 2" to_port="through 3"/>
+                  <portSpacing port="source_input 1" spacing="0"/>
+                  <portSpacing port="source_input 2" spacing="0"/>
+                  <portSpacing port="source_input 3" spacing="0"/>
+                  <portSpacing port="sink_performance" spacing="0"/>
+                  <portSpacing port="sink_result 1" spacing="0"/>
+                  <portSpacing port="sink_result 2" spacing="0"/>
+                  <portSpacing port="sink_result 3" spacing="0"/>
+                </process>
+              </operator>
+              <operator activated="true" class="rapidprom:export_log" compatibility="4.0.002" expanded="true" height="68" name="Export Event Log" width="90" x="715" y="85">
+                <parameter key="folder" value="D:\PHD\Experiments\Synthetic Models\EventLogs\NoisyData\Discovered Models"/>
+                <parameter key="file_name" value="%{file_name}-Combine"/>
+                <parameter key="file_format" value="xes"/>
+              </operator>
+              <operator activated="true" class="rapidprom:export_petri_net" compatibility="4.0.002" expanded="true" height="68" name="Export Petri net (4)" width="90" x="447" y="391">
+                <parameter key="folder" value="D:\PHD\Experiments\Synthetic Models\EventLogs\Results"/>
+                <parameter key="file_name" value="%{file_name}-Combine"/>
+                <parameter key="file_format" value="pnml"/>
+              </operator>
+              <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Multiply (15)" width="90" x="581" y="391"/>
+              <operator activated="true" class="log_to_data" compatibility="7.5.001" expanded="true" height="103" name="Inductive Log to Data (8)" width="90" x="715" y="391">
+                <parameter key="log_name" value="Combine Log"/>
+              </operator>
+              <operator activated="true" class="write_excel" compatibility="7.5.001" expanded="true" height="82" name="Write Excel (8)" width="90" x="849" y="391">
+                <parameter key="excel_file" value="D:\PHD\Experiments\Synthetic Models\EventLogs\NoisyData\Results\%{file_name}-Inductive-Combine.xlsx"/>
+                <parameter key="file_format" value="xlsx"/>
+                <parameter key="encoding" value="SYSTEM"/>
+                <parameter key="sheet_name" value="RapidMiner Data"/>
+                <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+                <parameter key="number_format" value="#.0"/>
+              </operator>
+              <operator activated="true" class="clear_log" compatibility="7.5.001" expanded="true" height="82" name="Clear Log (5)" width="90" x="983" y="391">
+                <parameter key="log_name" value="Combine Log"/>
+                <parameter key="delete_table" value="false"/>
+              </operator>
+              <operator activated="true" class="log_to_data" compatibility="7.5.001" expanded="true" height="103" name="Inductive Log to Data (9)" width="90" x="715" y="544">
+                <parameter key="log_name" value="Combine Log 2"/>
+              </operator>
+              <operator activated="true" class="write_excel" compatibility="7.5.001" expanded="true" height="82" name="Write Excel (9)" width="90" x="849" y="544">
+                <parameter key="excel_file" value="D:\PHD\Experiments\Synthetic Models\EventLogs\NoisyData\Results\agg\%{file_name}-Inductive-Combine.xlsx"/>
+                <parameter key="file_format" value="xlsx"/>
+                <parameter key="encoding" value="SYSTEM"/>
+                <parameter key="sheet_name" value="RapidMiner Data"/>
+                <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+                <parameter key="number_format" value="#.0"/>
+              </operator>
+              <operator activated="true" class="rapidprom:rprom_free_memory" compatibility="4.0.002" expanded="true" height="68" name="Free Memory (5)" width="90" x="715" y="187"/>
+              <connect from_port="in 1" to_op="RL (2)" to_port="through 1"/>
+              <connect from_port="in 2" to_op="Optimize Parameters (4)" to_port="input 2"/>
+              <connect from_op="RL (2)" from_port="through 1" to_op="Optimize Parameters (4)" to_port="input 1"/>
+              <connect from_op="Optimize Parameters (4)" from_port="result 1" to_op="Export Petri net (4)" to_port="input"/>
+              <connect from_op="Optimize Parameters (4)" from_port="result 2" to_op="Export Event Log" to_port="input"/>
+              <connect from_op="Export Petri net (4)" from_port="through" to_op="Multiply (15)" to_port="input"/>
+              <connect from_op="Multiply (15)" from_port="output 1" to_op="Inductive Log to Data (8)" to_port="through 1"/>
+              <connect from_op="Multiply (15)" from_port="output 2" to_op="Inductive Log to Data (9)" to_port="through 1"/>
+              <connect from_op="Inductive Log to Data (8)" from_port="exampleSet" to_op="Write Excel (8)" to_port="input"/>
+              <connect from_op="Write Excel (8)" from_port="through" to_op="Clear Log (5)" to_port="through 1"/>
+              <connect from_op="Inductive Log to Data (9)" from_port="exampleSet" to_op="Write Excel (9)" to_port="input"/>
+              <portSpacing port="source_in 1" spacing="0"/>
+              <portSpacing port="source_in 2" spacing="0"/>
+              <portSpacing port="source_in 3" spacing="0"/>
+              <portSpacing port="sink_out 1" spacing="0"/>
+            </process>
+          </operator>
+          <operator activated="true" class="subprocess" compatibility="7.5.001" expanded="true" height="103" name="Approximation" width="90" x="648" y="391">
+            <process expanded="true">
+              <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="NF" width="90" x="380" y="34">
+                <parameter key="macro" value="NF"/>
+                <parameter key="value" value="NF"/>
+              </operator>
+              <operator activated="true" class="loop_parameters" compatibility="7.5.001" expanded="true" height="103" name="Loop Parameters (4)" width="90" x="380" y="187">
+                <list key="parameters">
+                  <parameter key="IMi2.Variation" value="Inductive Miner - Infrequent"/>
+                  <parameter key="IMi2.Noise Threshold" value="[0.2;0.6;2;linear]"/>
+                </list>
+                <parameter key="error_handling" value="ignore error"/>
+                <parameter key="synchronize" value="false"/>
+                <process expanded="true">
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Multiply (2)" width="90" x="246" y="136"/>
+                  <operator activated="true" class="rapidprom:add_artificial_start_end_event_filter" compatibility="4.0.002" expanded="true" height="68" name="Add Artificial Start and End Event" width="90" x="447" y="289">
+                    <parameter key="Add Start Event" value="false"/>
+                    <parameter key="Add End Event" value="false"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:mine_petri_net_with_inductive_miner" compatibility="4.0.002" expanded="true" height="68" name="IMi2" width="90" x="313" y="34">
+                    <parameter key="event_classifier" value="Event Name"/>
+                    <parameter key="Variation" value="Inductive Miner - Infrequent"/>
+                    <parameter key="Noise Threshold" value="0.2"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="82" name="Multiply" width="90" x="447" y="34"/>
+                  <operator activated="true" class="optimize_parameters_grid" compatibility="7.5.001" expanded="true" height="124" name="Optimize Parameters (Grid)" width="90" x="849" y="34">
+                    <list key="parameters">
+                      <parameter key="Conformance Approximation Using Sampling.Selection Method" value="FastAlignment"/>
+                      <parameter key="Conformance Approximation Using Sampling.Threshold" value="1,10,20,30,50"/>
+                    </list>
+                    <parameter key="error_handling" value="ignore error"/>
+                    <process expanded="true">
+                      <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="82" name="Multiply (14)" width="90" x="45" y="340"/>
+                      <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Multiply (16)" width="90" x="45" y="34"/>
+                      <operator activated="true" class="rapidprom:Conformance_APROX_SAMPLING" compatibility="4.0.002" expanded="true" height="82" name="Conformance Approximation Using Sampling" width="90" x="112" y="187">
+                        <parameter key="event_classifier" value="Event Name"/>
+                        <parameter key="Threshold" value="50"/>
+                        <parameter key="Selection Method" value="FastAlignment"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Approxiamtion" width="90" x="246" y="187">
+                        <parameter key="attribute_name" value="Approximated Fitness"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="LowerBound" width="90" x="380" y="187">
+                        <parameter key="attribute_name" value="The Lower Bound of Fitness Value"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="UpperBound" width="90" x="514" y="187">
+                        <parameter key="attribute_name" value="The Upper Bound of Fitness Value"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Fitness Without" width="90" x="246" y="289">
+                        <parameter key="attribute_name" value="Aproximated Fitness Error without model"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Avg Without" width="90" x="380" y="289">
+                        <parameter key="attribute_name" value="Avergae Alignment Cost Error without Model"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Max Without" width="90" x="514" y="289">
+                        <parameter key="attribute_name" value="Maximum Alignment Cost Error without Model"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Appx Time" width="90" x="179" y="391">
+                        <parameter key="attribute_name" value="Approximation Time"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Selection Percentage" width="90" x="313" y="391">
+                        <parameter key="attribute_name" value="Percentage of Computed Alignments"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="MB size" width="90" x="447" y="391">
+                        <parameter key="attribute_name" value="Size of Model Behavior Subset"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Selection Time" width="90" x="581" y="391">
+                        <parameter key="attribute_name" value="Instance Selection Time"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="MB time" width="90" x="45" y="493">
+                        <parameter key="attribute_name" value="Alignment Computation Time"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="MSQ without" width="90" x="179" y="493">
+                        <parameter key="attribute_name" value="MSQ Alignment Cost Error without Model"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Total Time" width="90" x="313" y="493">
+                        <parameter key="attribute_name" value="Total time"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Error Bound computation time without" width="90" x="447" y="493">
+                        <parameter key="attribute_name" value="Time to find Error of Approximation without Model"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Traverse Time" width="90" x="581" y="493">
+                        <parameter key="attribute_name" value="Traverse Time"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="LB1" width="90" x="45" y="595">
+                        <parameter key="attribute_name" value="LB1"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="LB2" width="90" x="246" y="595">
+                        <parameter key="attribute_name" value="LB2"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="LB3" width="90" x="380" y="595">
+                        <parameter key="attribute_name" value="LB3"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Threads" width="90" x="112" y="697">
+                        <parameter key="attribute_name" value="Number of Threads"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="LbAC" width="90" x="246" y="697">
+                        <parameter key="attribute_name" value="Average of Lower bounds for alignment cost"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="UbAC" width="90" x="380" y="697">
+                        <parameter key="attribute_name" value="Average of Upper bounds for alignment cost"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="ApxAc" width="90" x="514" y="697">
+                        <parameter key="attribute_name" value="Average of Approximations for alignment cost"/>
+                        <parameter key="example_index" value="1"/>
+                      </operator>
+                      <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="82" name="Nothing Inductive Log" width="90" x="782" y="340">
+                        <parameter key="filename" value="G:\PHD\Experiments\Thesis\SamplingJadidFast.log"/>
+                        <list key="log">
+                          <parameter key="IMi Threshold" value="operator.IMi2.parameter.Variation"/>
+                          <parameter key="Imi" value="operator.IMi2.parameter.Noise Threshold"/>
+                          <parameter key="Apx Fitness " value="operator.Approxiamtion.value.data_value"/>
+                          <parameter key="LowerBound" value="operator.LowerBound.value.data_value"/>
+                          <parameter key="UpperBound" value="operator.UpperBound.value.data_value"/>
+                          <parameter key="Fitness Without" value="operator.Fitness Without.value.data_value"/>
+                          <parameter key="Avg Without" value="operator.Avg Without.value.data_value"/>
+                          <parameter key="Max Without" value="operator.Max Without.value.data_value"/>
+                          <parameter key="Msq Without" value="operator.MSQ without.value.data_value"/>
+                          <parameter key="Alignment  Percentage " value="operator.Selection Percentage.value.data_value"/>
+                          <parameter key="Selection Percentage" value="operator.Conformance Approximation Using Sampling.parameter.Threshold"/>
+                          <parameter key="LogName" value="operator.FName.value.macro_value"/>
+                          <parameter key="Selection Method" value="operator.Conformance Approximation Using Sampling.parameter.Selection Method"/>
+                          <parameter key="MB Size" value="operator.MB size.value.data_value"/>
+                          <parameter key="LB1" value="operator.LB1.value.data_value"/>
+                          <parameter key="LB2" value="operator.LB2.value.data_value"/>
+                          <parameter key="LB3" value="operator.LB3.value.data_value"/>
+                          <parameter key="Selection Time " value="operator.Selection Time.value.data_value"/>
+                          <parameter key="MB Time " value="operator.MB time.value.data_value"/>
+                          <parameter key="Error Bound Computation Time Without" value="operator.Error Bound computation time without.value.data_value"/>
+                          <parameter key="Total Time" value="operator.Total Time.value.data_value"/>
+                          <parameter key="Traverse Time" value="operator.Traverse Time.value.data_value"/>
+                          <parameter key="Approximation Time" value="operator.Appx Time.value.data_value"/>
+                          <parameter key="nThreads" value="operator.Threads.value.data_value"/>
+                          <parameter key="UB Alignment Cost" value="operator.UbAC.value.data_value"/>
+                          <parameter key="LB Alignment Cost" value="operator.LbAC.value.data_value"/>
+                          <parameter key="Apx Aignment Cost " value="operator.ApxAc.value.data_value"/>
+                        </list>
+                        <parameter key="sorting_type" value="none"/>
+                        <parameter key="sorting_k" value="100"/>
+                        <parameter key="persistent" value="false"/>
+                      </operator>
+                      <operator activated="true" class="extract_performance" compatibility="7.5.001" expanded="true" height="82" name="Performance" width="90" x="916" y="340">
+                        <parameter key="performance_type" value="data_value"/>
+                        <parameter key="statistics" value="max"/>
+                        <parameter key="attribute_name" value="LB1"/>
+                        <parameter key="example_index" value="1"/>
+                        <parameter key="optimization_direction" value="maximize"/>
+                      </operator>
+                      <connect from_port="input 1" to_op="Multiply (16)" to_port="input"/>
+                      <connect from_port="input 2" to_op="Multiply (14)" to_port="input"/>
+                      <connect from_op="Multiply (14)" from_port="output 1" to_op="Conformance Approximation Using Sampling" to_port="event log (ProM Event Log)"/>
+                      <connect from_op="Multiply (16)" from_port="output 1" to_port="result 1"/>
+                      <connect from_op="Multiply (16)" from_port="output 2" to_op="Conformance Approximation Using Sampling" to_port="model (ProM Petri Net)"/>
+                      <connect from_op="Conformance Approximation Using Sampling" from_port="experiment result" to_op="Approxiamtion" to_port="example set"/>
+                      <connect from_op="Approxiamtion" from_port="example set" to_op="LowerBound" to_port="example set"/>
+                      <connect from_op="LowerBound" from_port="example set" to_op="UpperBound" to_port="example set"/>
+                      <connect from_op="UpperBound" from_port="example set" to_op="Fitness Without" to_port="example set"/>
+                      <connect from_op="Fitness Without" from_port="example set" to_op="Avg Without" to_port="example set"/>
+                      <connect from_op="Avg Without" from_port="example set" to_op="Max Without" to_port="example set"/>
+                      <connect from_op="Max Without" from_port="example set" to_op="Appx Time" to_port="example set"/>
+                      <connect from_op="Appx Time" from_port="example set" to_op="Selection Percentage" to_port="example set"/>
+                      <connect from_op="Selection Percentage" from_port="example set" to_op="MB size" to_port="example set"/>
+                      <connect from_op="MB size" from_port="example set" to_op="Selection Time" to_port="example set"/>
+                      <connect from_op="Selection Time" from_port="example set" to_op="MB time" to_port="example set"/>
+                      <connect from_op="MB time" from_port="example set" to_op="MSQ without" to_port="example set"/>
+                      <connect from_op="MSQ without" from_port="example set" to_op="Total Time" to_port="example set"/>
+                      <connect from_op="Total Time" from_port="example set" to_op="Error Bound computation time without" to_port="example set"/>
+                      <connect from_op="Error Bound computation time without" from_port="example set" to_op="Traverse Time" to_port="example set"/>
+                      <connect from_op="Traverse Time" from_port="example set" to_op="LB1" to_port="example set"/>
+                      <connect from_op="LB1" from_port="example set" to_op="LB2" to_port="example set"/>
+                      <connect from_op="LB2" from_port="example set" to_op="LB3" to_port="example set"/>
+                      <connect from_op="LB3" from_port="example set" to_op="Threads" to_port="example set"/>
+                      <connect from_op="Threads" from_port="example set" to_op="LbAC" to_port="example set"/>
+                      <connect from_op="LbAC" from_port="example set" to_op="UbAC" to_port="example set"/>
+                      <connect from_op="UbAC" from_port="example set" to_op="ApxAc" to_port="example set"/>
+                      <connect from_op="ApxAc" from_port="example set" to_op="Nothing Inductive Log" to_port="through 1"/>
+                      <connect from_op="Nothing Inductive Log" from_port="through 1" to_op="Performance" to_port="example set"/>
+                      <connect from_op="Performance" from_port="performance" to_port="performance"/>
+                      <portSpacing port="source_input 1" spacing="0"/>
+                      <portSpacing port="source_input 2" spacing="0"/>
+                      <portSpacing port="source_input 3" spacing="0"/>
+                      <portSpacing port="sink_performance" spacing="0"/>
+                      <portSpacing port="sink_result 1" spacing="0"/>
+                      <portSpacing port="sink_result 2" spacing="0"/>
+                    </process>
+                  </operator>
+                  <connect from_port="input 1" to_op="IMi2" to_port="event log (ProM Event Log)"/>
+                  <connect from_port="input 2" to_op="Multiply (2)" to_port="input"/>
+                  <connect from_op="Multiply (2)" from_port="output 1" to_op="Optimize Parameters (Grid)" to_port="input 2"/>
+                  <connect from_op="Multiply (2)" from_port="output 2" to_op="Add Artificial Start and End Event" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="IMi2" from_port="model (ProM Petri Net)" to_op="Multiply" to_port="input"/>
+                  <connect from_op="Multiply" from_port="output 1" to_op="Optimize Parameters (Grid)" to_port="input 1"/>
+                  <portSpacing port="source_input 1" spacing="0"/>
+                  <portSpacing port="source_input 2" spacing="0"/>
+                  <portSpacing port="source_input 3" spacing="0"/>
+                  <portSpacing port="sink_performance" spacing="0"/>
+                  <portSpacing port="sink_result 1" spacing="0"/>
+                  <portSpacing port="sink_result 2" spacing="0"/>
+                </process>
+              </operator>
+              <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="82" name="Multiply (19)" width="90" x="380" y="442"/>
+              <operator activated="true" class="log_to_data" compatibility="7.5.001" expanded="true" height="103" name="Inductive Log to Data (4)" width="90" x="581" y="391">
+                <parameter key="log_name" value="Nothing Inductive Log"/>
+              </operator>
+              <operator activated="false" class="write_excel" compatibility="7.5.001" expanded="true" height="82" name="Write Excel (4)" width="90" x="849" y="391">
+                <parameter key="excel_file" value="G:\PHD\Experiments\Synthetic Models\BehaviorAnalysis20180416\Results\Excels\%{file_name}-Inductive-Nothing.xlsx"/>
+                <parameter key="file_format" value="xlsx"/>
+                <parameter key="encoding" value="SYSTEM"/>
+                <parameter key="sheet_name" value="RapidMiner Data"/>
+                <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+                <parameter key="number_format" value="#.0"/>
+              </operator>
+              <operator activated="false" class="clear_log" compatibility="7.5.001" expanded="true" height="68" name="Clear Log (4)" width="90" x="983" y="391">
+                <parameter key="log_name" value="Nothing Inductive Log"/>
+                <parameter key="delete_table" value="false"/>
+              </operator>
+              <operator activated="false" class="log_to_data" compatibility="7.5.001" expanded="true" height="82" name="Inductive Log to Data (5)" width="90" x="648" y="544">
+                <parameter key="log_name" value="Nothing Inductive Log (2)"/>
+              </operator>
+              <operator activated="false" class="write_excel" compatibility="7.5.001" expanded="true" height="82" name="Write Excel (5)" width="90" x="782" y="544">
+                <parameter key="excel_file" value="D:\PHD\Experiments\Synthetic Models\EventLogs\NoisyData\Results\agg\%{file_name}-Inductive-Nothing2.xlsx"/>
+                <parameter key="file_format" value="xlsx"/>
+                <parameter key="encoding" value="SYSTEM"/>
+                <parameter key="sheet_name" value="RapidMiner Data"/>
+                <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
+                <parameter key="number_format" value="#.0"/>
+              </operator>
+              <connect from_port="in 1" to_op="NF" to_port="through 1"/>
+              <connect from_port="in 2" to_op="Loop Parameters (4)" to_port="input 2"/>
+              <connect from_op="NF" from_port="through 1" to_op="Loop Parameters (4)" to_port="input 1"/>
+              <connect from_op="Loop Parameters (4)" from_port="result 1" to_op="Multiply (19)" to_port="input"/>
+              <connect from_op="Multiply (19)" from_port="output 1" to_op="Inductive Log to Data (4)" to_port="through 1"/>
+              <connect from_op="Inductive Log to Data (5)" from_port="exampleSet" to_op="Write Excel (5)" to_port="input"/>
+              <portSpacing port="source_in 1" spacing="0"/>
+              <portSpacing port="source_in 2" spacing="0"/>
+              <portSpacing port="source_in 3" spacing="0"/>
+              <portSpacing port="sink_out 1" spacing="0"/>
+            </process>
+          </operator>
+          <connect from_port="file object" to_op="Extract Event Log" to_port="file"/>
+          <connect from_op="Extract Event Log" from_port="output" to_op="Add Artificial Start and End Event (2)" to_port="event log (ProM Event Log)"/>
+          <connect from_op="Add Artificial Start and End Event (2)" from_port="event log (ProM Event Log)" to_op="Add Classifier to Event Log" to_port="event log (ProM Event Log)"/>
+          <connect from_op="Add Classifier to Event Log" from_port="event log (ProM Event Log)" to_op="Multiply (31)" to_port="input"/>
+          <connect from_op="Multiply (31)" from_port="output 1" to_op="FName" to_port="through 1"/>
+          <connect from_op="Multiply (31)" from_port="output 2" to_op="Log" to_port="through 1"/>
+          <connect from_op="Multiply (31)" from_port="output 3" to_op="Approximation" to_port="in 2"/>
+          <connect from_op="Multiply (31)" from_port="output 4" to_op="Directly_Follow_Counter" to_port="event log (ProM Event Log)"/>
+          <connect from_op="Directly_Follow_Counter" from_port="experiment result" to_op="Trace" to_port="example set"/>
+          <connect from_op="Trace" from_port="example set" to_op="Variant" to_port="example set"/>
+          <connect from_op="Variant" from_port="example set" to_op="Activitiy" to_port="example set"/>
+          <connect from_op="FName" from_port="through 1" to_op="Approximation" to_port="in 1"/>
+          <portSpacing port="source_file object" spacing="0"/>
+          <portSpacing port="source_in 1" spacing="0"/>
+          <portSpacing port="source_in 2" spacing="0"/>
+          <portSpacing port="sink_out 1" spacing="0"/>
+        </process>
+      </operator>
+      <connect from_op="Set Macro" from_port="through 1" to_op="Create PetriNet" to_port="in 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+    </process>
+  </operator>
+</process>

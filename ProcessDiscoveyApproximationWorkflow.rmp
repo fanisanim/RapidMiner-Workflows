@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="7.5.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="7.5.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="Set Macro" width="90" x="514" y="85">
+        <parameter key="macro" value="BASEDIR"/>
+        <parameter key="value" value="D:\PHD\Resources\BPI\2017\Rapid\REpair"/>
+      </operator>
+      <operator activated="true" class="loop_files" compatibility="6.4.000" expanded="true" height="82" name="Load Event Logs" width="90" x="715" y="85">
+        <parameter key="directory" value="G:\PHD\Experiments\Sampling\Temp"/>
+        <parameter key="filter" value="*.xes"/>
+        <parameter key="filtered_string" value="file name (last part of the path)"/>
+        <parameter key="file_name_macro" value="file_name"/>
+        <parameter key="file_path_macro" value="file_path"/>
+        <parameter key="parent_path_macro" value="parent_path"/>
+        <parameter key="recursive" value="false"/>
+        <parameter key="iterate_over_files" value="true"/>
+        <parameter key="iterate_over_subdirs" value="false"/>
+        <process expanded="true">
+          <operator activated="true" class="rapidprom:extract_log_from_file" compatibility="4.0.002" expanded="true" height="68" name="Extract Event Log" width="90" x="45" y="34">
+            <parameter key="importer" value="Naive"/>
+          </operator>
+          <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="124" name="Multiply (31)" width="90" x="179" y="34"/>
+          <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="82" name="Log" width="90" x="313" y="289">
+            <parameter key="filename" value="G:\PHD\Experiments\Thesis\Filtering\MatrixFilter.log"/>
+            <list key="log">
+              <parameter key="Fname2" value="operator.FName.parameter.value"/>
+            </list>
+            <parameter key="sorting_type" value="none"/>
+            <parameter key="sorting_k" value="100"/>
+            <parameter key="persistent" value="false"/>
+          </operator>
+          <operator activated="true" class="rapidprom:directly_follow_counter" compatibility="4.0.002" expanded="true" height="68" name="Log Analyzer" width="90" x="380" y="187"/>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Log Traces" width="90" x="514" y="187">
+            <parameter key="attribute_name" value="Number of Traces"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Log Variants" width="90" x="648" y="187">
+            <parameter key="attribute_name" value="Number of Variants"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Log Activities" width="90" x="782" y="187">
+            <parameter key="attribute_name" value="Number of Activities"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Log DF" width="90" x="581" y="289">
+            <parameter key="attribute_name" value="Number of Directly Follow Realations"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Log CS" width="90" x="715" y="289">
+            <parameter key="attribute_name" value="Number of Constraints"/>
+            <parameter key="example_index" value="1"/>
+          </operator>
+          <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="FName" width="90" x="380" y="34">
+            <parameter key="macro" value="FName"/>
+            <parameter key="value" value="%{file_name}"/>
+          </operator>
+          <operator activated="true" class="subprocess" compatibility="7.5.001" expanded="true" height="82" name="Sampling" width="90" x="648" y="34">
+            <process expanded="true">
+              <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="82" name="NF" width="90" x="112" y="34">
+                <parameter key="macro" value="NF"/>
+                <parameter key="value" value="NF"/>
+              </operator>
+              <operator activated="true" class="optimize_parameters_grid" compatibility="7.5.001" expanded="true" height="103" name="Optimize Parameters (Grid)" width="90" x="313" y="34">
+                <list key="parameters">
+                  <parameter key="Variant Sampling.Threshold" value="1,3,5,10,20,30,50,75"/>
+                  <parameter key="Variant Sampling.Sampling Method" value="Frequency"/>
+                </list>
+                <parameter key="error_handling" value="ignore error"/>
+                <process expanded="true">
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Original Event Log" width="90" x="45" y="136"/>
+                  <operator activated="true" class="rapidprom:variant_sampling" compatibility="4.0.002" expanded="true" height="68" name="Variant Sampling" width="90" x="112" y="34">
+                    <parameter key="event_classifier" value="(Event Name AND Lifecycle transition)"/>
+                    <parameter key="Threshold" value="99"/>
+                    <parameter key="Sampling Policy" value="InstanceSelection"/>
+                    <parameter key="Sampling Method" value="Frequency"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="103" name="Sampled Event Log" width="90" x="246" y="34"/>
+                  <operator activated="true" class="rapidprom:add_classifier_log" compatibility="4.0.002" expanded="true" height="68" name="Add Classifier" width="90" x="313" y="391">
+                    <parameter key="Classifier" value="Event name"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:directly_follow_counter" compatibility="4.0.002" expanded="true" height="68" name="Sampled Log Analyzer" width="90" x="447" y="391"/>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Sampled Log Traces" width="90" x="581" y="391">
+                    <parameter key="attribute_name" value="Number of Traces"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Sample Log Variants" width="90" x="715" y="391">
+                    <parameter key="attribute_name" value="Number of Variants"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Sample Log Activities" width="90" x="849" y="391">
+                    <parameter key="attribute_name" value="Number of Activities"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Sample Log DF" width="90" x="983" y="391">
+                    <parameter key="attribute_name" value="Number of Directly Follow Realations"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Sample Log CS" width="90" x="1117" y="391">
+                    <parameter key="attribute_name" value="Number of Constraints"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:mine_petri_net_with_inductive_miner" compatibility="4.0.002" expanded="true" height="68" name="IMi" width="90" x="380" y="34">
+                    <parameter key="event_classifier" value="Event Name"/>
+                    <parameter key="Variation" value="Inductive Miner - Infrequent"/>
+                    <parameter key="Noise Threshold" value="0.2"/>
+                  </operator>
+                  <operator activated="true" class="multiply" compatibility="7.5.001" expanded="true" height="145" name="Process Model" width="90" x="581" y="34"/>
+                  <operator activated="true" class="rapidprom:petrinet_complexity_metrics" compatibility="4.0.002" expanded="true" height="68" name="Complexity Metrics (Petri Net)" width="90" x="380" y="289"/>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Cardoso" width="90" x="514" y="289">
+                    <parameter key="attribute_name" value="Extended Cardoso metric"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Cyc" width="90" x="648" y="289">
+                    <parameter key="attribute_name" value="Extended Cyclomatic metric"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Dens" width="90" x="782" y="289">
+                    <parameter key="attribute_name" value="Density metric"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Arc" width="90" x="916" y="289">
+                    <parameter key="attribute_name" value="Number of arcs"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Trans" width="90" x="1050" y="289">
+                    <parameter key="attribute_name" value="Number of transitions"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Place" width="90" x="1184" y="289">
+                    <parameter key="attribute_name" value="Number of places"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Structure" width="90" x="1318" y="289">
+                    <parameter key="attribute_name" value="Structuredness metric"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="set_macro" compatibility="7.5.001" expanded="true" height="103" name="Disco IM" width="90" x="782" y="136">
+                    <parameter key="macro" value="Inductive"/>
+                    <parameter key="value" value="Inductive"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:replay_a_log_on_petri_net_for_conformance_analysis" compatibility="4.0.002" expanded="true" height="124" name="Conformance Checking" width="90" x="916" y="34">
+                    <parameter key="event_classifier" value="Event Name"/>
+                    <parameter key="Max Explored States (in Thousands)" value="100"/>
+                    <parameter key="Timeout (sec)" value="6000"/>
+                    <parameter key="Number of Threads" value="50"/>
+                    <parameter key="Use ILP for heuristic" value="true"/>
+                    <parameter key="Restrict to integers" value="true"/>
+                    <parameter key="Use result of previous ILP as an estimator for the heuristic" value="true"/>
+                    <parameter key="Heuristic Function" value="PLAIN"/>
+                    <parameter key="Epsilon" value="0.0"/>
+                    <parameter key="Queueing Model" value="DEPTHFIRST"/>
+                    <parameter key="Non-synchronous move sorting" value="NONE"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Fitness" width="90" x="1117" y="34">
+                    <parameter key="attribute_name" value="trace_fitness"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="rapidprom:etc_1_align_precision" compatibility="4.0.002" expanded="true" height="82" name="Calculate ETC 1-align precision" width="90" x="1050" y="136">
+                    <parameter key="Pruning (cut) threshold for the Automaton" value="0.0"/>
+                  </operator>
+                  <operator activated="true" class="extract_log_value" compatibility="7.5.001" expanded="true" height="68" name="Precision" width="90" x="1251" y="136">
+                    <parameter key="attribute_name" value="Value"/>
+                    <parameter key="example_index" value="1"/>
+                  </operator>
+                  <operator activated="true" class="log" compatibility="7.5.001" expanded="true" height="145" name="Inductive Log" width="90" x="1452" y="187">
+                    <parameter key="filename" value="G:\PHD\Experiments\Thesis\Filtering\samplingInductiveD.log"/>
+                    <list key="log">
+                      <parameter key="Log Name" value="operator.FName.value.macro_value"/>
+                      <parameter key="E Traces" value="operator.Log Traces.value.data_value"/>
+                      <parameter key="E Variants" value="operator.Log Variants.value.data_value"/>
+                      <parameter key="E Activities" value="operator.Log Activities.value.data_value"/>
+                      <parameter key="E DF " value="operator.Log DF.value.data_value"/>
+                      <parameter key="E CS" value="operator.Log CS.value.data_value"/>
+                      <parameter key="F Traces" value="operator.Sampled Log Traces.value.data_value"/>
+                      <parameter key="F Variants" value="operator.Sample Log Variants.value.data_value"/>
+                      <parameter key="F Activities" value="operator.Sample Log Activities.value.data_value"/>
+                      <parameter key="F DF" value="operator.Sample Log DF.value.data_value"/>
+                      <parameter key="F CS" value="operator.Sample Log CS.value.data_value"/>
+                      <parameter key="Time of Preprocessing" value="operator.Variant Sampling.value.execution-time"/>
+                      <parameter key="Precision" value="operator.Precision.value.data_value"/>
+                      <parameter key="Fitness" value="operator.Fitness.value.data_value"/>
+                      <parameter key="Cordoso" value="operator.Cardoso.value.data_value"/>
+                      <parameter key="Cyclic" value="operator.Cyc.value.data_value"/>
+                      <parameter key="Dens" value="operator.Dens.value.data_value"/>
+                      <parameter key="Arcs (Edges)" value="operator.Arc.value.data_value"/>
+                      <parameter key="Transitions" value="operator.Trans.value.data_value"/>
+                      <parameter key="Places" value="operator.Place.value.data_value"/>
+                      <parameter key="Structuredness" value="operator.Structure.value.data_value"/>
+                      <parameter key="Discovery Time" value="operator.IMi.value.execution-time"/>
+                      <parameter key="Discovery Method" value="operator.Disco IM.parameter.value"/>
+                      <parameter key="Disco Setting 1 " value="operator.IMi.parameter.Variation"/>
+                      <parameter key="Disco Setting 2" value="operator.IMi.parameter.Noise Threshold"/>
+                      <parameter key="Preprocessing Method" value="operator.Preprocess (Sample).parameter.value"/>
+                      <parameter key="Preprocessing Setting 1 " value="operator.Variant Sampling.parameter.Threshold"/>
+                      <parameter key="Preprocessing Setting 2" value="operator.Variant Sampling.parameter.Sampling Method"/>
+                      <parameter key="Preprocessing Setting 3" value="operator.Variant Sampling.parameter.Sampling Policy"/>
+                    </list>
+                    <parameter key="sorting_type" value="none"/>
+                    <parameter key="sorting_k" value="100"/>
+                    <parameter key="persistent" value="false"/>
+                  </operator>
+                  <operator activated="true" class="extract_performance" compatibility="7.5.001" expanded="true" height="82" name="Performance" width="90" x="1452" y="34">
+                    <parameter key="performance_type" value="number_of_examples"/>
+                    <parameter key="statistics" value="average"/>
+                    <parameter key="attribute_name" value="FMeasure2"/>
+                    <parameter key="example_index" value="1"/>
+                    <parameter key="optimization_direction" value="maximize"/>
+                  </operator>
+                  <connect from_port="input 1" to_op="Original Event Log" to_port="input"/>
+                  <connect from_op="Original Event Log" from_port="output 1" to_op="Variant Sampling" to_port="event log "/>
+                  <connect from_op="Original Event Log" from_port="output 2" to_op="Disco IM" to_port="through 2"/>
+                  <connect from_op="Variant Sampling" from_port="log (Filtered Log)" to_op="Sampled Event Log" to_port="input"/>
+                  <connect from_op="Sampled Event Log" from_port="output 1" to_op="IMi" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Sampled Event Log" from_port="output 2" to_op="Add Classifier" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Add Classifier" from_port="event log (ProM Event Log)" to_op="Sampled Log Analyzer" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Sampled Log Analyzer" from_port="experiment result" to_op="Sampled Log Traces" to_port="example set"/>
+                  <connect from_op="Sampled Log Traces" from_port="example set" to_op="Sample Log Variants" to_port="example set"/>
+                  <connect from_op="Sample Log Variants" from_port="example set" to_op="Sample Log Activities" to_port="example set"/>
+                  <connect from_op="Sample Log Activities" from_port="example set" to_op="Sample Log DF" to_port="example set"/>
+                  <connect from_op="Sample Log DF" from_port="example set" to_op="Sample Log CS" to_port="example set"/>
+                  <connect from_op="Sample Log CS" from_port="example set" to_op="Inductive Log" to_port="through 4"/>
+                  <connect from_op="IMi" from_port="model (ProM Petri Net)" to_op="Process Model" to_port="input"/>
+                  <connect from_op="Process Model" from_port="output 1" to_op="Complexity Metrics (Petri Net)" to_port="model (Petri Net)"/>
+                  <connect from_op="Process Model" from_port="output 2" to_op="Disco IM" to_port="through 1"/>
+                  <connect from_op="Process Model" from_port="output 3" to_op="Conformance Checking" to_port="model (ProM Petri Net)"/>
+                  <connect from_op="Process Model" from_port="output 4" to_op="Calculate ETC 1-align precision" to_port="model (PetriNet)"/>
+                  <connect from_op="Complexity Metrics (Petri Net)" from_port="metrics (Example Set)" to_op="Cardoso" to_port="example set"/>
+                  <connect from_op="Cardoso" from_port="example set" to_op="Cyc" to_port="example set"/>
+                  <connect from_op="Cyc" from_port="example set" to_op="Dens" to_port="example set"/>
+                  <connect from_op="Dens" from_port="example set" to_op="Arc" to_port="example set"/>
+                  <connect from_op="Arc" from_port="example set" to_op="Trans" to_port="example set"/>
+                  <connect from_op="Trans" from_port="example set" to_op="Place" to_port="example set"/>
+                  <connect from_op="Place" from_port="example set" to_op="Structure" to_port="example set"/>
+                  <connect from_op="Structure" from_port="example set" to_op="Inductive Log" to_port="through 1"/>
+                  <connect from_op="Disco IM" from_port="through 2" to_op="Conformance Checking" to_port="event log (ProM Event Log)"/>
+                  <connect from_op="Conformance Checking" from_port="example set with metrics, log level (Data Table)" to_op="Fitness" to_port="example set"/>
+                  <connect from_op="Conformance Checking" from_port="alignments (ProM PNRepResult)" to_op="Calculate ETC 1-align precision" to_port="alignments (ProM PNRepResult)"/>
+                  <connect from_op="Fitness" from_port="example set" to_op="Inductive Log" to_port="through 3"/>
+                  <connect from_op="Calculate ETC 1-align precision" from_port="example set (Data Table)" to_op="Precision" to_port="example set"/>
+                  <connect from_op="Precision" from_port="example set" to_op="Inductive Log" to_port="through 2"/>
+                  <connect from_op="Inductive Log" from_port="through 1" to_op="Performance" to_port="example set"/>
+                  <connect from_op="Performance" from_port="performance" to_port="performance"/>
+                  <portSpacing port="source_input 1" spacing="0"/>
+                  <portSpacing port="source_input 2" spacing="0"/>
+                  <portSpacing port="sink_performance" spacing="0"/>
+                  <portSpacing port="sink_result 1" spacing="0"/>
+                </process>
+              </operator>
+              <connect from_port="in 1" to_op="NF" to_port="through 1"/>
+              <connect from_op="NF" from_port="through 1" to_op="Optimize Parameters (Grid)" to_port="input 1"/>
+              <portSpacing port="source_in 1" spacing="0"/>
+              <portSpacing port="source_in 2" spacing="0"/>
+              <portSpacing port="sink_out 1" spacing="0"/>
+            </process>
+          </operator>
+          <connect from_port="file object" to_op="Extract Event Log" to_port="file"/>
+          <connect from_op="Extract Event Log" from_port="output" to_op="Multiply (31)" to_port="input"/>
+          <connect from_op="Multiply (31)" from_port="output 1" to_op="FName" to_port="through 1"/>
+          <connect from_op="Multiply (31)" from_port="output 2" to_op="Log Analyzer" to_port="event log (ProM Event Log)"/>
+          <connect from_op="Multiply (31)" from_port="output 3" to_op="Log" to_port="through 1"/>
+          <connect from_op="Log Analyzer" from_port="experiment result" to_op="Log Traces" to_port="example set"/>
+          <connect from_op="Log Traces" from_port="example set" to_op="Log Variants" to_port="example set"/>
+          <connect from_op="Log Variants" from_port="example set" to_op="Log Activities" to_port="example set"/>
+          <connect from_op="Log Activities" from_port="example set" to_op="Log DF" to_port="example set"/>
+          <connect from_op="Log DF" from_port="example set" to_op="Log CS" to_port="example set"/>
+          <connect from_op="FName" from_port="through 1" to_op="Sampling" to_port="in 1"/>
+          <portSpacing port="source_file object" spacing="0"/>
+          <portSpacing port="source_in 1" spacing="0"/>
+          <portSpacing port="source_in 2" spacing="0"/>
+          <portSpacing port="sink_out 1" spacing="0"/>
+        </process>
+      </operator>
+      <connect from_op="Set Macro" from_port="through 1" to_op="Load Event Logs" to_port="in 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+    </process>
+  </operator>
+</process>
